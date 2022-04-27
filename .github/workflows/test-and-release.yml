@@ -1,0 +1,67 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+on:
+  push:
+    branches: [main, staging]
+    tags:
+      - "v*"
+  pull_request:
+    branches: [main, staging]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: "Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)"
+        required: false
+        default: false
+
+jobs:
+  build:
+    env:
+      SUPABASE_SERVICE_ROLE_KEY: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTYyNzIwNzUzMiwiZXhwIjoxNjkwMjc5NTMyLCJhdWQiOiIiLCJzdWIiOiIiLCJyb2xlIjoic2VydmljZV9yb2xlIn0.hfdXFZV5PdvUdo2xK0vStb1i97GJukSkRqfwd4YIh2M"
+      JWT_SECRET: "your-super-secret-jwt-token-with-at-least-32-characters-long"
+      SUPABASE_URL: http://localhost:8000
+      PORT: 4000
+      ISSUER: "stadtpuls.com"
+      DATABASE_URL: "postgres://postgres:your-super-secret-and-long-postgres-password@localhost:5432/postgres"
+      SUPABASE_MAX_ROWS: 3000
+      STAGE: test
+
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+    steps:
+      - name: Checkout technologiestiftung/stadtpuls-test-utils
+        uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm run build --if-present
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    needs:
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+      - name: Install dependencies
+        run: npm ci
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: npx semantic-release

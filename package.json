@@ -1,0 +1,67 @@
+{
+  "name": "@technologiestiftung/stadtpuls-test-utils",
+  "private": false,
+  "version": "1.0.0",
+  "description": "Test utilities used in both the API and Fronted repositories of the Stadtpuls.com project",
+  "author": "technologiestiftung",
+  "homepage": "https://github.com/technologiestiftung/stadtpuls-test-utils/tree/main/packages/stadtpuls-test-utils#readme",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/technologiestiftung/stadtpuls-test-utils.git"
+  },
+  "files": [
+    "src",
+    "dist",
+    "docs"
+  ],
+  "scripts": {
+    "generate:types": "ts-node -r dotenv/config scripts/create-supabase-types.ts",
+    "prebuild": "rimraf dist",
+    "postbuild": "tsc --noEmit --project tsconfig.build.json",
+    "build": "node esbuild.config.js",
+    "dev": "nodemon",
+    "commit": "cz"
+  },
+  "bugs": {
+    "url": "https://github.com/technologiestiftung/stadtpuls-test-utils/issues"
+  },
+  "devDependencies": {
+    "@inpyjamas/scripts": "0.1.11-alpha",
+    "@semantic-release/changelog": "6.0.1",
+    "@semantic-release/commit-analyzer": "9.0.2",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/github": "8.0.2",
+    "@semantic-release/npm": "8.0.3",
+    "@semantic-release/release-notes-generator": "10.0.3",
+    "@technologiestiftung/stadtpuls-supabase-definitions": "0.0.5",
+    "@types/config": "0.0.41",
+    "@types/node-fetch": "2.6.1",
+    "@types/pg": "8.6.5",
+    "commitizen": "4.2.4",
+    "cz-conventional-changelog": "3.3.0",
+    "date-fns": "2.28.0",
+    "dotenv": "10.0.0",
+    "esbuild": "0.12.28",
+    "eslint": "7.32.0",
+    "glob": "7.2.0",
+    "is-ci": "3.0.1",
+    "semantic-release": "18.0.1",
+    "ts-node": "10.2.1",
+    "typescript": "4.4.3"
+  },
+  "dependencies": {
+    "@faker-js/faker": "6.0.0",
+    "@humanwhocodes/env": "2.2.0",
+    "@supabase/supabase-js": "1.31.1",
+    "config": "3.3.7",
+    "pg": "8.7.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
